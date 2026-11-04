@@ -1,0 +1,22 @@
+[
+    {
+        "inventory_number": "EQ-001",
+        "name": "Токарный станок 16К20",
+        "status": "working"
+    },
+    {
+        "inventory_number": "EQ-002",
+        "name": "Фрезерный станок 6Р12",
+        "status": "repair"
+    },
+    {
+        "inventory_number": "EQ-003",
+        "name": "Компрессор К-3",
+        "status": "broken"
+    },
+    {
+        "inventory_number": "EQ-004",
+        "name": "Сварочный аппарат",
+        "status": "working"
+    }
+]

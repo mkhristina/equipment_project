@@ -1,0 +1,35 @@
+
+[
+    {
+        "inventory_number": "EQ-001",
+        "name": "Токарный станок 16К20",
+        "equipment_type": "станок",
+        "department": "Механический цех",
+        "production_year": 2018,
+        "status": "working"
+    },
+    {
+        "inventory_number": "EQ-002",
+        "name": "Фрезерный станок 6Р12",
+        "equipment_type": "станок",
+        "department": "Механический цех",
+        "production_year": 2015,
+        "status": "repair"
+    },
+    {
+        "inventory_number": "EQ-003",
+        "name": "Компрессор К-3",
+        "equipment_type": "компрессор",
+        "department": "Энергетический цех",
+        "production_year": 2020,
+        "status": "broken"
+    },
+    {
+        "inventory_number": "EQ-004",
+        "name": "Сварочный аппарат",
+        "equipment_type": "сварочное оборудование",
+        "department": "Сварочный участок",
+        "production_year": 2022,
+        "status": "working"
+    }
+]
