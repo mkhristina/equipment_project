@@ -4,9 +4,9 @@
 
 ## О проекте
 
-Equipment Management System — учебный проект на Python и Django, предназначенный для хранения информации об оборудовании и учёта заявок на его обслуживание.
+Equipment Management System — учебный проект на Python, Django и FastAPI, предназначенный для хранения информации об оборудовании, учёта заявок на техническое обслуживание и обработки событий.
 
-Проект позволяет организовать данные об оборудовании, связывать оборудование с заявками на ремонт, выполнять SQL-запросы и анализировать информацию с помощью Django ORM.
+Проект демонстрирует работу с реляционной и NoSQL базами данных, REST API, асинхронной обработкой сообщений, контейнеризацией и автоматическим тестированием.
 
 ## Основные возможности
 
@@ -16,59 +16,86 @@ Equipment Management System — учебный проект на Python и Djang
 - Создание заявок на техническое обслуживание.
 - Указание приоритета и статуса каждой заявки.
 - Связь оборудования с заявками по принципу «один ко многим».
-- Выполнение SQL-запросов для анализа данных.
-- Проверка структуры базы данных.
+- Выполнение SQL-запросов и анализ данных с помощью Django ORM.
 - Управление оборудованием и заявками через Django Admin.
 - Просмотр статистики оборудования и заявок.
+- REST API на Django REST Framework.
+- Отдельный REST API на FastAPI с проверкой данных через Pydantic.
+- Запись событий аудита в MongoDB.
+- Отправка событий через RabbitMQ.
+- Асинхронная обработка сообщений отдельным потребителем (consumer).
+- Запуск сервисов с помощью Docker Compose.
+- Автоматическое тестирование с помощью pytest и GitHub Actions.
 
 ## Используемые технологии
 
-- Python
-- Django
+- Python 3.13
+- Django 6.1
 - Django REST Framework
+- FastAPI
+- Pydantic
 - SQLite
-- SQL
-- HTML
+- MongoDB
+- RabbitMQ
+- pika
+- asyncio
+- pytest
+- Docker
+- Docker Compose
+- Git и GitHub Actions
 
 ## Структура проекта
 
 ```text
 equipment_project/
 │
-├── config/                     # Настройки Django
-├── maintenance/                # Приложение Django
-│   ├── migrations/             # Миграции базы данных
-│   ├── models.py               # Модели оборудования и заявок
-│   ├── admin.py                # Настройки административной панели
-│   ├── apps.py                 # Конфигурация приложения
-│   ├── tests.py                # Тесты
-│   ├── urls.py                 # Маршруты приложения
-│   └── views.py                # Представления и статистика
+├── config/                         # Настройки Django
+├── maintenance/                    # Приложение Django
+│   ├── migrations/                 # Миграции базы данных
+│   ├── models.py                   # Модели оборудования и заявок
+│   ├── admin.py                    # Django Admin
+│   ├── api_urls.py                 # Маршруты REST API
+│   ├── api_views.py                # Представления REST API
+│   ├── audit.py                    # Интеграция с MongoDB
+│   ├── serializers.py              # Сериализаторы
+│   ├── signals.py                  # Сигналы Django
+│   ├── urls.py                     # Маршруты приложения
+│   └── views.py                    # Представления и статистика
 │
-├── equipment.html              # HTML-таблица оборудования
-├── equipment.json              # Исходные данные оборудования
-├── parsed_equipment.json       # Результат HTML-парсинга
-├── parse_html.py               # Парсинг HTML
-├── models.py                   # Модели из предыдущих заданий
-├── maintenance_request.py      # Класс заявки из предыдущих заданий
-├── service.py                  # Сервис управления заявками
-├── final_project.py            # Основная программа предыдущих заданий
-├── load_django_data.py         # Загрузка данных в Django
-├── check_django_db.py          # Проверка структуры базы Django
-├── sql_examples.sql            # Примеры SQL-запросов
-├── run_sql_examples.py         # Запуск SQL-запросов
-├── db.sqlite3                  # База данных Django
-├── manage.py                   # Управление Django-проектом
-├── requirements.txt            # Зависимости проекта
-└── README.md                   # Описание проекта
+├── fastapi_service/
+│   ├── app/
+│   │   ├── main.py                 # FastAPI приложение
+│   │   ├── schemas.py              # Pydantic-схемы
+│   │   └── events.py               # Отправка событий в RabbitMQ
+│   ├── consumer.py                 # Получатель сообщений RabbitMQ
+│   └── Dockerfile                  # Образ FastAPI
+│
+├── tests/
+│   └── test_fastapi.py             # Тесты FastAPI
+│
+├── .github/
+│   └── workflows/
+│       └── tests.yml               # GitHub Actions
+│
+├── Dockerfile                      # Образ Django
+├── docker-compose.yml              # Конфигурация сервисов
+├── .dockerignore
+├── .gitignore
+├── ARCHITECTURE.md                 # Описание архитектуры
+├── asyncio_demo.py                 # Демонстрация asyncio
+├── pytest.ini                      # Настройки pytest
+├── requirements.txt                # Зависимости проекта
+├── manage.py                       # Управление Django
+├── db.sqlite3                      # База данных Django
+└── README.md                       # Документация проекта
 ```
 
-## Установка и запуск
+## Установка и локальный запуск Django
 
 ### 1. Клонирование проекта
 
 ```bash
-git clone URL_ВАШЕГО_РЕПОЗИТОРИЯ
+git clone https://github.com/mkhristina/equipment_project.git
 cd equipment_project
 ```
 
@@ -92,37 +119,80 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 5. Создание и применение миграций
+### 5. Применение миграций
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 6. Загрузка демонстрационных данных
-
-```bash
-python load_django_data.py
-```
-
-### 7. Создание администратора
+### 6. Создание администратора
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 8. Запуск локального сервера
+### 7. Запуск Django
 
 ```bash
 python manage.py runserver
 ```
 
-После запуска доступны следующие страницы:
+После запуска доступны:
 
 - Административная панель: http://127.0.0.1:8000/admin/
 - Статистика: http://127.0.0.1:8000/statistics/
+- Django REST API: http://127.0.0.1:8000/api/
 
-Для работы страниц локальный сервер должен быть запущен.
+## Запуск всей системы через Docker Compose
+
+Для запуска контейнеров необходимо установить Docker Desktop с поддержкой WSL2.
+
+Из корневой папки проекта выполните:
+
+### 1. Сборка и запуск сервисов
+
+```bash
+docker compose up --build -d
+```
+
+Docker Compose запускает следующие сервисы:
+
+- Django — основное приложение и REST API.
+- FastAPI — отдельный сервис для работы с заявками.
+- MongoDB — хранение записей аудита.
+- RabbitMQ — обмен сообщениями.
+- Consumer — получение и обработка сообщений RabbitMQ.
+
+### 2. Проверка запущенных контейнеров
+
+```bash
+docker compose ps
+```
+
+### 3. Доступные адреса
+
+| Сервис | Адрес |
+|---|---|
+| Django API | http://localhost:8002/api/ |
+| Django Admin | http://localhost:8002/admin/ |
+| Django Statistics | http://localhost:8002/statistics/ |
+| FastAPI | http://localhost:8001/ |
+| FastAPI Swagger | http://localhost:8001/docs |
+| FastAPI Health | http://localhost:8001/health |
+| RabbitMQ Management | http://localhost:15673/ |
+
+Для RabbitMQ Management используются учётные данные:
+
+- Логин: `equipment_user`
+- Пароль: `equipment_pass_2026`
+
+### 4. Остановка контейнеров
+
+```bash
+docker compose down
+```
+
+Команда останавливает и удаляет контейнеры Compose, но сохраняет именованный том MongoDB.
 
 ## Django Admin
 
@@ -133,32 +203,110 @@ python manage.py runserver
 
 Настроены отображение полей, фильтрация и поиск записей.
 
+## Django REST API
+
+Django REST Framework предоставляет API для работы с данными оборудования и заявками.
+
+Основной адрес:
+
+```text
+http://localhost:8002/api/
+```
+
+## FastAPI
+
+FastAPI предоставляет отдельный сервис для работы с заявками на обслуживание.
+
+Основные маршруты:
+
+- `GET /health` — проверка работоспособности сервиса.
+- `GET /requests` — получение списка заявок.
+- `GET /requests/{request_id}` — получение заявки по идентификатору.
+- `POST /requests` — создание заявки.
+
+Для проверки API используется Swagger UI:
+
+http://localhost:8001/docs
+
+Валидация входных данных выполняется с помощью Pydantic.
+
+## MongoDB и аудит
+
+MongoDB используется для хранения событий аудита, связанных с работой приложения.
+
+Подключение к базе данных настраивается через переменную окружения `MONGO_URI`.
+
+При запуске через Docker Compose Django обращается к MongoDB по адресу внутренней сети Docker.
+
+## RabbitMQ и асинхронная обработка
+
+RabbitMQ используется для передачи событий о создании заявок на техническое обслуживание.
+
+Последовательность работы:
+
+1. Клиент отправляет запрос на создание заявки в FastAPI.
+2. FastAPI проверяет данные.
+3. Сервис публикует событие в очередь `maintenance_requests`.
+4. Consumer получает сообщение из очереди.
+5. Consumer обрабатывает сообщение и подтверждает его получение.
+
+Для отправки и получения сообщений используется библиотека pika.
+
 ## Статистика
 
 В приложении реализовано представление `/statistics/`, возвращающее данные в формате JSON:
 
 - `equipment_total` — общее количество единиц оборудования.
-- `equipment_in_repair` — количество единиц оборудования со статусом «Требует ремонта».
-- `critical_open_requests` — количество новых заявок с критическим приоритетом.
+- `equipment_in_repair` — количество единиц оборудования в ремонте.
+- `critical_open_requests` — количество открытых заявок с критическим приоритетом.
 
 ## Выполнение SQL-запросов
 
-В файле `sql_examples.sql` находятся четыре запроса:
+В файле `sql_examples.sql` находятся примеры запросов:
 
 1. Получение заявок с сортировкой по приоритету.
 2. Подсчёт количества заявок по статусам.
 3. Поиск оборудования без активных заявок.
 4. Определение оборудования с наибольшим количеством заявок.
 
-Для выполнения запросов используйте:
+Для выполнения запросов используется:
 
 ```bash
 python run_sql_examples.py
 ```
 
+## Тестирование
+
+Для запуска автоматических тестов используется pytest.
+
+```bash
+pytest
+```
+
+Тесты проверяют работу FastAPI и обработку запросов.
+
+## GitHub Actions
+
+В проекте настроен GitHub Actions для автоматического запуска тестов.
+
+Workflow находится в файле:
+
+```text
+.github/workflows/tests.yml
+```
+
+При отправке изменений в ветку `main` или создании Pull Request автоматически выполняются следующие действия:
+
+1. Получение исходного кода.
+2. Установка Python 3.13.
+3. Установка зависимостей.
+4. Запуск pytest.
+
+Результаты выполнения доступны во вкладке Actions репозитория GitHub.
+
 ## Структура базы данных
 
-В проекте используются две основные таблицы.
+В Django используются две основные таблицы.
 
 ### Equipment
 
@@ -193,5 +341,15 @@ python run_sql_examples.py
 - Создание проекта Django и приложения maintenance.
 - Создание и применение миграций.
 - Настройка Django Admin.
-- Добавление и просмотр оборудования и заявок через административную панель.
+- Разработка REST API на Django REST Framework.
 - Реализация страницы статистики.
+- Создание FastAPI-сервиса.
+- Валидация данных с помощью Pydantic.
+- Интеграция с MongoDB для аудита.
+- Интеграция с RabbitMQ.
+- Асинхронная обработка событий.
+- Контейнеризация приложений с помощью Docker.
+- Оркестрация сервисов через Docker Compose.
+- Написание автоматических тестов pytest.
+- Настройка CI с помощью GitHub Actions.
+- Документирование архитектуры проекта.
