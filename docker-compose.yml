@@ -1,0 +1,76 @@
+
+services:
+
+  # MongoDB — база данных для аудита
+  mongo:
+    image: mongo:7
+    container_name: equipment-mongo-compose
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # RabbitMQ — очередь сообщений
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: equipment-rabbitmq-compose
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: equipment_user
+      RABBITMQ_DEFAULT_PASS: equipment_pass_2026
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # FastAPI — дополнительный API
+  fastapi:
+    build:
+      context: .
+      dockerfile: fastapi_service/Dockerfile
+    container_name: equipment-fastapi-compose
+    ports:
+      - "8001:8000"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: equipment_user
+      RABBITMQ_PASSWORD: equipment_pass_2026
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Consumer — обработчик сообщений
+  consumer:
+    build:
+      context: .
+      dockerfile: fastapi_service/Dockerfile
+    container_name: equipment-consumer-compose
+    command: ["python", "-m", "fastapi_service.consumer"]
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: equipment_user
+      RABBITMQ_PASSWORD: equipment_pass_2026
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  # Django — основной backend
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: equipment-django-compose
+    ports:
+      - "8002:8000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
